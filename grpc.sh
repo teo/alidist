@@ -1,6 +1,6 @@
 package: grpc
 version: "%(tag_basename)s"
-tag:  v1.13.0-alice1
+tag:  alice/v1.13.0
 requires:
   - protobuf
 build_requires:
