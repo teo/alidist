@@ -10,9 +10,13 @@ requires:
   - Monitoring
   - Configuration
   - ReadoutCard
+  - Control-OCCPlugin
+  - protobuf
 build_requires:
   - CMake
-source: https://github.com/AliceO2Group/Readout
+  - golang
+  - SWIG
+source: https://github.com/teo/Readout
 incremental_recipe: |
   make ${JOBS:+-j$JOBS} install
   mkdir -p $INSTALLROOT/etc/modulefiles && rsync -a --delete etc/modulefiles/ $INSTALLROOT/etc/modulefiles
@@ -20,7 +24,12 @@ incremental_recipe: |
 #!/bin/bash -ex
 
 case $ARCHITECTURE in
-    osx*) [[ ! $BOOST_ROOT ]] && BOOST_ROOT=$(brew --prefix boost);;
+    osx*)
+      [[ ! $BOOST_ROOT ]] && BOOST_ROOT=$(brew --prefix boost)
+      [[ ! $PROTOBUF_ROOT ]] && PROTOBUF_ROOT=$(brew --prefix protobuf)
+      [[ ! $GRPC_ROOT ]] && GRPC_ROOT=$(brew --prefix grpc)
+      LIBEXT=dylib
+    ;;
 esac
 
 cmake $SOURCEDIR                                              \
@@ -33,6 +42,9 @@ cmake $SOURCEDIR                                              \
       ${INFOLOGGER_VERSION:+-DInfoLogger_ROOT=$INFOLOGGER_ROOT} \
       ${FAIRROOT_VERSION:+-DFAIRROOTPATH=$FAIRROOT_ROOT}      \
       ${FAIRROOT_VERSION:+-DFairRoot_DIR=$FAIRROOT_ROOT}      \
+      ${CONTROL_OCCPLUGIN_VERSION:+-DOcc_DIR=$CONTROL_OCCPLUGIN_ROOT}      \
+      -DProtobuf_ROOT=${PROTOBUF_ROOT} \
+      -DGRPC_ROOT=${GRPC_ROOT} \
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 
 make ${JOBS+-j $JOBS} install

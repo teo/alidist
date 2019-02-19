@@ -7,7 +7,9 @@ requires:
   - Common-O2
   - MySQL
 build_requires:
+  - SWIG
   - CMake
+  - golang
 source: https://github.com/AliceO2Group/InfoLogger
 incremental_recipe: |
   make ${JOBS:+-j$JOBS} install
